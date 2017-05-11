@@ -35,8 +35,11 @@ std::string getRandomString()
 
   int fd;
   unsigned int seed;
+  ssize_t bytes_read;
   SYSCHECK(fd = open("/dev/urandom", O_RDONLY));
-  SYSCHECK(read(fd, &seed, sizeof(seed)));
+  SYSCHECK(bytes_read = read(fd, &seed, sizeof(seed)));
+  if (bytes_read != sizeof(seed))
+    throw std::runtime_error("failed to read from /dev/urandom");
   SYSCHECK(::close(fd));
   std::mt19937 prng {seed};
 
